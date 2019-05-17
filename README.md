@@ -17,11 +17,10 @@ do not hesitate to email engineering@wonderschool.com.
 
 The coding challenge revolves around building a task list. Tasks belong to groups and can have
 dependencies on one another (i.e. if task X depends on task Y, task X cannot be completed until
-task Y is completed). The challenge includes 3 components:
+task Y is completed). The challenge includes 2 components:
 
 * Build React-based UI
 * Design database schema
-* Document API
 
 ### Build React-based UI
 
@@ -46,7 +45,7 @@ Some things to keep in mind:
 * Locked tasks cannot have their completion status toggled
 * Tasks remain locked until all of their dependencies have been completed
 * Your implementation should resemble the above design
-* Please don't introduce any new dependencies, you should have everything you need to complete
+* **Please don't introduce any new dependencies**, you should have everything you need to complete
   the challenge
 * We value well structured code that follows best practices
 
@@ -55,20 +54,6 @@ Some things to keep in mind:
 Design a schema in SQL to store the task list data. You can add the SQL code needed to create
 the schema to _schema.sql_. The schema should define all tables, columns, and constraints needed
 to store the task list data.
-
-### Document API
-
-In order to have a useful task list UX, the React app needs to be able to sync changes to a backend.
-Document what you think a well designed task list API would look like by listing the endpoints
-it'd be composed of and detailing the following for each endpoint:
-
-* HTTP method
-* URL
-* Request parameters
-* Response format
-
-You only need to document this API, there's no need to implement any sort of backend functionality.
-Please use _api.md_ to describe your design in whatever format you prefer.
 
 ## Getting Started
 
