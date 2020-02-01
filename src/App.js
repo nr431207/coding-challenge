@@ -1,61 +1,79 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios'
 import Tasks from './Tasks';
 import Details from './Details';
-import { isPurchase } from './detailsUtils';
+import { getGroupIndex } from './detailsUtils';
 import './App.css'
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items : [],
-      purchases: [],
-      makePlane: [],
-      isGroupOneClicked : false,
-      isGroupTwoClicked : false
+      groups : {},
+      tasks : [],
+      isGroupClicked : false,
+      groupIndex: null
     }
-    this.handleClickGroup1 = this.handleClickGroup1.bind(this);
-    this.handleClickGroup2 = this.handleClickGroup2.bind(this);
+    this.handleClickGroup = this.handleClickGroup.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
+    let groups = {};
     axios.get('http://localhost:3000/data.json')
       .then(res => {
-        this.setState({items: res.data})
+        res.data.map(item => {
+          if(groups[item.group]) {
+            groups[item.group].push(item)
+          } else {
+            groups[item.group] = [item]
+          }
+        })
+        this.setState({groups})
     })
-  }
-  
-  handleClickGroup1(){
-    const {items, isGroupOneClicked} = this.state;
-    this.setState({isGroupOneClicked: !isGroupOneClicked});
-    let purchase = []
-    items.forEach(item => {
-      if(isPurchase(item)) purchase.push(item)
-    })
-    this.setState({purchases: [...purchase]})
   }
 
-  handleClickGroup2(){
-    const {items,isGroupTwoClicked} = this.state;
-    this.setState({isGroupTwoClicked: !isGroupTwoClicked});
-    let build = []
-    items.forEach(item => {
-      if(!isPurchase(item)) build.push(item)
+  handleChange() {
+    this.state.items.map(item => {
+      if(!item.completedAt) item.completedAt = !item.completedAt
     })
-    this.setState({makePlane: build})
+    console.log(this.state.items)
+  }
+  
+  handleClickGroup(e){
+    const { isGroupClicked } = this.state;
+    let index = getGroupIndex(e.currentTarget.textContent);
+    this.setState({
+      isGroupClicked: !isGroupClicked,
+      groupIndex: index
+    });
   }
 
   render() {
-    const {purchases, makePlane, items, isGroupOneClicked, isGroupTwoClicked} = this.state;
-    if(isGroupOneClicked) return <Details tasks={purchases}/>
-    if(isGroupTwoClicked) return <Details tasks={makePlane}/>
+    const {
+      groups,
+      isGroupClicked,
+      groupIndex
+    } = this.state;
+
+    if(isGroupClicked) {
+      return (
+        <Details 
+        groups={groups}
+        groupIndex={groupIndex}
+        handleChange={this.handleChange}
+        />
+      )
+    }
+    
     return (
       <div>
-        {!items && <div>Loading ...</div>}
-        Things To Do
-        <Tasks clickGroup1={this.handleClickGroup1} clickGroup2={this.handleClickGroup2} />
-
+        {!groups && <div>Loading ...</div>}
+        <h3>Things To Do</h3>
+        <Tasks 
+        handleClickGroup={this.handleClickGroup}
+        groups={groups}
+        />
       </div>
     )
   }

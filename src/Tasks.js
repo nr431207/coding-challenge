@@ -1,10 +1,17 @@
 import React from 'react';
 
-export default class Tasks extends React.Component {
-  render(){
-    return <div>
-    <li onClick={this.props.clickGroup1}>Task Group 1</li>
-    <li onClick={this.props.clickGroup2}>Task Group 2</li>
-  </div>
-  }
+const Tasks = props => {
+  let keys = Object.keys(props.groups);
+
+  return keys.map((_, index) => {
+    index ++
+    return (
+      <div>
+        <li onClick={e => props.handleClickGroup(e)}>{`Task Group ${index}`}</li>
+      </div>
+    )
+  })
+
 }
+
+export default Tasks;
