@@ -3,7 +3,9 @@ import axios from 'axios'
 import Tasks from './Tasks';
 import Details from './Details';
 import { getGroupIndex } from './detailsUtils';
-import './App.css'
+import  Nav from 'react-bootstrap/Nav';
+import Container from 'react-bootstrap/Container';
+import * as style from './App.css';
 
 export default class App extends Component {
   constructor(props) {
@@ -16,6 +18,7 @@ export default class App extends Component {
     }
     this.handleClickGroup = this.handleClickGroup.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleBackClick = this.handleBackClick.bind(this);
   }
 
   componentDidMount() {
@@ -30,15 +33,34 @@ export default class App extends Component {
           }
         })
         this.setState({groups})
+    }).catch(error => {
+      console.log(error)
     })
   }
 
-  handleChange() {
-    this.state.items.map(item => {
-      if(!item.completedAt) item.completedAt = !item.completedAt
-    })
-    console.log(this.state.items)
+  handleChange(e) {
+    let updatedGroups = {...this.state.groups};
+    if(e.currentTarget.checked) {
+      for (let key in this.state.groups) {
+        for(let i = 0; i < updatedGroups[key].length; i++) {
+          if(updatedGroups[key][i].task === e.currentTarget.value) {
+            updatedGroups[key][i].completedAt = true
+          }
+        }
+      }
+      this.setState({ groups: updatedGroups});    
+    } else {
+      for (let key in this.state.groups) {
+        for(let i = 0; i < updatedGroups[key].length; i++) {
+          if(updatedGroups[key][i].task === e.currentTarget.value) {
+            updatedGroups[key][i].completedAt = null
+          }
+        }
+      }
+      this.setState({ groups: updatedGroups}); 
+    }
   }
+
   
   handleClickGroup(e){
     const { isGroupClicked } = this.state;
@@ -49,32 +71,41 @@ export default class App extends Component {
     });
   }
 
+  handleBackClick() {
+    this.setState({ isGroupClicked: false})
+  }
+
   render() {
     const {
       groups,
       isGroupClicked,
-      groupIndex
+      groupIndex,
     } = this.state;
 
     if(isGroupClicked) {
-      return (
-        <Details 
-        groups={groups}
-        groupIndex={groupIndex}
-        handleChange={this.handleChange}
-        />
-      )
+      return <Container>
+          <h3>Task Group {groupIndex+1}</h3>
+          <div className={style.nav}>
+          <Nav pullRight>
+          <Nav.Link href="#home" onClick={this.handleBackClick}>ALL GROUPS</Nav.Link>
+          </Nav>
+          </div>
+          <Details 
+          groups={groups}
+          groupIndex={groupIndex}
+          handleChange={this.handleChange}
+          />
+        </Container>
+      
     }
     
-    return (
-      <div>
+    return <Container>
         {!groups && <div>Loading ...</div>}
         <h3>Things To Do</h3>
         <Tasks 
         handleClickGroup={this.handleClickGroup}
         groups={groups}
         />
-      </div>
-    )
+      </Container>   
   }
 }
